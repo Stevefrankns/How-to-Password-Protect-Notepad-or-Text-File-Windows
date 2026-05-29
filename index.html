@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<!-- Replace YOUR-DOMAIN.com before launch -->
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How to Password Protect a Notepad or Text File in Windows</title>
+<meta content="A complete, step-by-step guide to password protecting your Notepad text files. Learn how to encrypt .txt files using 7-Zip, Windows EFS, Notepad++, and more." name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+:root {
+    --mesh-a: #0EA5E9;
+    --mesh-b: #8B5CF6;
+    --mesh-c: #EC4899;
+    --mesh-d: #10B981;
+    --dark-base: #05071A;
+    --dark-surface: #0B1028;
+    --stage-surface: rgba(11, 16, 40, 0.82);
+    --color-hero-bg: #05071A;
+    --color-primary-accent: #8B5CF6;
+    --color-secondary-accent: rgba(14, 165, 233, 0.12);
+    --color-content-bg: #ffffff;
+    --color-body-text: #0F172A;
+    --color-heading-text: #0F172A;
+    --color-border: rgba(139, 92, 246, 0.18);
+    --color-meta-text: #64748B;
+    --font-heading: 'Nunito', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --max-reading-width: 760px;
+    --max-wide-width: 1120px;
+    --section-padding-v: 86px;
+    --radius-card: 24px;
+    --shadow-card: 0 22px 80px rgba(15, 23, 42, 0.10);
+    --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.22), 0 0 72px rgba(14, 165, 233, 0.16);
+    --transition-speed: 0.25s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-body);
+    color: var(--color-body-text);
+    background: #fff;
+    line-height: 1.78;
+    font-size: 16px;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(14, 165, 233, 0.08), transparent 28%),
+        radial-gradient(circle at 88% 20%, rgba(236, 72, 153, 0.07), transparent 26%),
+        radial-gradient(circle at 50% 92%, rgba(16, 185, 129, 0.06), transparent 30%),
+        #ffffff;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: var(--font-heading);
+    color: var(--color-heading-text);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+h2 { font-size: clamp(2rem, 4vw, 3rem); }
+h3 { font-size: clamp(1.35rem, 2.5vw, 1.8rem); }
+h4 { font-size: 1.2rem; letter-spacing: -0.02em; }
+
+p { margin-bottom: 1.5rem; }
+
+a {
+    color: var(--color-primary-accent);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color var(--transition-speed), opacity var(--transition-speed), transform var(--transition-speed);
+}
+
+a:hover { color: var(--mesh-a); }
+
+ul, ol { margin: 0 0 1.5rem 1.5rem; }
+li { margin-bottom: 0.5rem; }
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+}
+
+code {
+    color: #5B21B6;
+    background: rgba(139, 92, 246, 0.10);
+    border: 1px solid rgba(139, 92, 246, 0.12);
+    padding: 0.1rem 0.38rem;
+    border-radius: 8px;
+    font-size: 0.92em;
+}
+
+.container { max-width: var(--max-reading-width); margin: 0 auto; padding: 0 22px; position: relative; z-index: 1; }
+.container-wide { max-width: var(--max-wide-width); margin: 0 auto; padding: 0 22px; position: relative; z-index: 1; }
+
+.section {
+    position: relative;
+    padding: var(--section-padding-v) 0;
+    overflow: hidden;
+    background: #fff;
+}
+
+.section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, var(--aurora-strength, 0.04)), transparent 34%),
+        radial-gradient(circle at 84% 18%, rgba(139, 92, 246, var(--aurora-strength, 0.04)), transparent 32%),
+        radial-gradient(circle at 18% 86%, rgba(16, 185, 129, var(--aurora-strength, 0.035)), transparent 28%),
+        radial-gradient(circle at 78% 80%, rgba(236, 72, 153, var(--aurora-strength, 0.035)), transparent 30%);
+    transition: background 0.7s ease, opacity 0.7s ease;
+}
+
+.section.in-view { --aurora-strength: 0.08; }
+
+.bg-alt { background-color: #F8FAFF; }
+
+.label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 800;
+    color: var(--color-primary-accent);
+    display: inline-block;
+    margin-bottom: 0.75rem;
+}
+
+#progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--mesh-a), var(--mesh-b), var(--mesh-c), var(--mesh-d));
+    width: 0%;
+    z-index: 9999;
+    transition: width 0.1s ease;
+    box-shadow: 0 0 22px rgba(14, 165, 233, 0.55);
+}
+
+/* Header */
+.site-header {
+    position: sticky;
+    top: 0;
+    background: rgba(5, 7, 26, 0.78);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    z-index: 1000;
+    padding: 14px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.site-title {
+    font-family: var(--font-heading);
+    font-size: 21px;
+    font-weight: 800;
+    color: #F0F4FF;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.brand-logo {
+    height: 38px;
+    width: 38px;
+    margin-right: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 28px rgba(14, 165, 233, 0.35);
+    flex: 0 0 auto;
+}
+
+.nav-links { display: flex; gap: 26px; align-items: center; }
+
+.nav-links a {
+    font-size: 13px;
+    color: rgba(240, 244, 255, 0.86);
+    font-weight: 700;
+}
+
+.nav-links a:hover { color: #fff; text-decoration: none; }
+
+.nav-cta {
+    border: 1px solid rgba(14, 165, 233, 0.72);
+    padding: 9px 16px;
+    border-radius: 999px;
+    color: #fff !important;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.92), rgba(139, 92, 246, 0.82));
+    box-shadow: 0 10px 32px rgba(14, 165, 233, 0.22);
+}
+
+.nav-cta:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+
+.mobile-toggle {
+    display: none;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    width: 44px;
+    height: 44px;
+}
+
+/* Hero */
+.article-hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: #F0F4FF;
+    padding: 84px 0 56px;
+    background:
+        radial-gradient(circle at 17% 18%, rgba(14, 165, 233, 0.78), transparent 30%),
+        radial-gradient(circle at 83% 8%, rgba(139, 92, 246, 0.80), transparent 34%),
+        radial-gradient(circle at 72% 68%, rgba(236, 72, 153, 0.36), transparent 34%),
+        radial-gradient(circle at 18% 82%, rgba(16, 185, 129, 0.32), transparent 30%),
+        radial-gradient(circle at 48% 38%, rgba(14, 165, 233, 0.24), transparent 42%),
+        #05071A;
+    background-size: 120% 120%, 130% 130%, 110% 110%, 120% 120%, 130% 130%, auto;
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, 48% 40%, center;
+    animation: heroMeshShift 20s ease-in-out infinite alternate;
+}
+
+.article-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(180deg, rgba(5, 7, 26, 0.52), rgba(5, 7, 26, 0.95)),
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 36%);
+}
+
+.article-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at center, black, transparent 78%);
+}
+
+@keyframes heroMeshShift {
+    0% { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, 48% 40%, center; }
+    50% { background-position: 8% 12%, 86% 18%, 90% 82%, 12% 92%, 55% 48%, center; }
+    100% { background-position: 18% 4%, 78% 20%, 82% 72%, 6% 78%, 42% 52%, center; }
+}
+
+.article-hero .container { max-width: 920px; }
+
+.breadcrumb {
+    font-size: 13px;
+    color: rgba(240, 244, 255, 0.70);
+    margin-bottom: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.breadcrumb a { color: rgba(240, 244, 255, 0.76); text-decoration: none; }
+.breadcrumb a:hover { color: #fff; }
+
+.article-hero h1 {
+    color: #F0F4FF;
+    font-size: clamp(44px, 7.2vw, 72px);
+    margin-bottom: 24px;
+    max-width: 960px;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #0EA5E9, #8B5CF6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-intro {
+    font-size: clamp(1.05rem, 2vw, 1.22rem);
+    color: rgba(240, 244, 255, 0.86);
+    margin-bottom: 26px;
+    max-width: 790px;
+}
+
+.meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(240, 244, 255, 0.76);
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 34px;
+}
+
+.meta-bar span {
+    background: rgba(5, 7, 26, 0.46);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    border-radius: 999px;
+    padding: 7px 12px;
+    backdrop-filter: blur(16px);
+}
+
+.meta-bar span:nth-child(2),
+.meta-bar span:nth-child(4) {
+    display: none;
+}
+
+.hero-image,
+.content-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(139,92,246,0.08));
+    border: 1px solid rgba(139, 92, 246, 0.16);
+    box-shadow: var(--shadow-card);
+}
+
+.hero-image {
+    max-height: none;
+    margin: 18px 0 42px;
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow: 0 28px 90px rgba(0,0,0,0.42), 0 0 60px rgba(14,165,233,0.14);
+}
+
+.content-image-wrap { margin: 32px 0 42px; }
+.content-image-wrap.image-boxshot { margin: 24px 0 0; }
+.content-image-wrap.image-faq { margin: 20px 0 36px; }
+
+.quick-answer {
+    position: relative;
+    background: rgba(5, 7, 26, 0.62);
+    border: 1px solid rgba(14, 165, 233, 0.26);
+    border-left: 4px solid var(--mesh-a);
+    padding: 26px;
+    border-radius: 24px;
+    margin-bottom: 10px;
+    color: rgba(240, 244, 255, 0.9);
+    box-shadow: var(--shadow-glow);
+    backdrop-filter: blur(18px);
+}
+
+.quick-answer-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #7DD3FC;
+    margin-bottom: 10px;
+}
+
+.hero-float-cards {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-float-card {
+    position: absolute;
+    color: rgba(240, 244, 255, 0.78);
+    background: rgba(8, 12, 34, 0.48);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 22px;
+    padding: 16px 18px;
+    box-shadow: 0 22px 80px rgba(0,0,0,0.26);
+    backdrop-filter: blur(20px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    animation: floatCard 6s ease-in-out infinite alternate;
+}
+
+.hero-float-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(14,165,233,0.34), rgba(139,92,246,0.26), rgba(236,72,153,0.25));
+    opacity: 0.5;
+    z-index: -1;
+    filter: blur(14px);
+}
+
+.hero-float-card.card-a { top: 18%; right: 8%; transform: rotate(7deg); }
+.hero-float-card.card-b { bottom: 26%; right: 12%; transform: rotate(-5deg); animation-delay: 1.1s; }
+.hero-float-card.card-c { top: 46%; left: 5%; transform: rotate(-6deg); animation-delay: 0.7s; }
+
+@keyframes floatCard {
+    from { translate: 0 -8px; }
+    to { translate: 0 8px; }
+}
+
+.aurora-divider {
+    height: 120px;
+    background: #fff;
+    margin-top: -1px;
+    overflow: hidden;
+    position: relative;
+}
+
+.aurora-divider svg {
+    width: 100%;
+    height: 120px;
+    display: block;
+    transform: translateY(-1px);
+}
+
+/* Cards and content */
+.toc-card,
+.pro-tip,
+.decision-tool,
+.compare-wrap {
+    position: relative;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(18px);
+}
+
+.toc-card { padding: 32px; margin-bottom: 44px; }
+.toc-card::before,
+.decision-tool::before,
+.compare-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 18% 0%, rgba(14,165,233,0.12), transparent 34%),
+        radial-gradient(circle at 86% 14%, rgba(139,92,246,0.10), transparent 36%);
+    pointer-events: none;
+}
+
+.toc-title {
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+}
+
+.toc-list { list-style: none; margin: 0; position: relative; z-index: 1; }
+.toc-list li { margin-bottom: 10px; }
+.toc-list a {
+    color: #1E293B;
+    border-bottom: 1px dashed rgba(139,92,246,0.30);
+    padding-bottom: 2px;
+}
+.toc-list a:hover { color: var(--color-primary-accent); border-color: var(--color-primary-accent); }
+
+.badge {
+    background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(139,92,246,0.12));
+    color: #5B21B6;
+    border: 1px solid rgba(139,92,246,0.18);
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-block;
+    margin-bottom: 18px;
+}
+
+.pro-tip {
+    padding: 24px;
+    margin: 28px 0;
+}
+
+.pro-tip::before {
+    content: "💡 Tip";
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: #fff;
+    padding: 2px 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #5B21B6;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 13px 24px;
+    border-radius: 999px;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed), background var(--transition-speed), color var(--transition-speed);
+    border: 1.5px solid var(--color-primary-accent);
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-outline {
+    background: rgba(255,255,255,0.78);
+    color: var(--color-primary-accent);
+    box-shadow: 0 14px 42px rgba(139,92,246,0.12);
+}
+
+.btn-outline:hover {
+    background: linear-gradient(135deg, var(--mesh-a), var(--mesh-b));
+    color: #fff;
+    box-shadow: var(--shadow-glow);
+}
+
+.btn-primary {
+    background: var(--mesh-a);
+    color: #fff;
+    border-color: var(--mesh-a);
+}
+
+.btn-primary:hover { box-shadow: var(--shadow-glow); }
+
+/* Recommendation dark mesh band */
+.saas-band {
+    position: relative;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(14,165,233,0.46), transparent 30%),
+        radial-gradient(circle at 78% 10%, rgba(139,92,246,0.55), transparent 34%),
+        radial-gradient(circle at 74% 76%, rgba(236,72,153,0.25), transparent 32%),
+        radial-gradient(circle at 25% 82%, rgba(16,185,129,0.22), transparent 28%),
+        #05071A;
+    padding: 94px 22px;
+    color: #F0F4FF;
+    margin: 0;
+    overflow: hidden;
+}
+
+.saas-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5,7,26,0.42), rgba(5,7,26,0.86));
+    pointer-events: none;
+}
+
+.saas-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 62px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.saas-content h2 { color: #fff; font-size: clamp(2.2rem, 4.4vw, 3.8rem); margin-bottom: 22px; }
+.saas-content p { color: rgba(240,244,255,0.82); font-size: 1.08rem; margin-bottom: 30px; }
+
+.saas-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+
+.saas-chip {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: rgba(240,244,255,0.88);
+    backdrop-filter: blur(14px);
+}
+
+.saas-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.saas-btn-fill {
+    background: #0EA5E9;
+    color: #fff;
+    padding: 14px 28px;
+    border-color: #0EA5E9;
+    box-shadow: 0 18px 44px rgba(14,165,233,0.28);
+}
+
+.saas-btn-fill:hover {
+    background: linear-gradient(135deg, var(--mesh-a), var(--mesh-b));
+    box-shadow: var(--shadow-glow);
+    color: #fff;
+}
+
+.saas-btn-out {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border: 1px solid rgba(139,92,246,0.76);
+    padding: 14px 28px;
+}
+
+.saas-btn-out:hover {
+    background: rgba(139,92,246,0.18);
+    box-shadow: 0 0 42px rgba(139,92,246,0.30);
+    color: #fff;
+}
+
+.saas-visual {
+    position: relative;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04)),
+        rgba(5, 7, 26, 0.36);
+    padding: 22px;
+    border-radius: 32px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 28px 90px rgba(0,0,0,0.38);
+    overflow: hidden;
+}
+
+.saas-visual::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background:
+        radial-gradient(circle at 25% 10%, rgba(14,165,233,0.22), transparent 34%),
+        radial-gradient(circle at 80% 30%, rgba(236,72,153,0.16), transparent 34%);
+    filter: blur(10px);
+    pointer-events: none;
+}
+
+.saas-visual > * { position: relative; z-index: 1; }
+
+.recommendation-shield {
+    width: 138px;
+    margin: 0 auto 20px;
+    filter: drop-shadow(0 0 28px rgba(14,165,233,0.36));
+}
+
+.recommendation-shield svg { width: 100%; height: auto; overflow: visible; }
+
+.recommendation-shield path,
+.recommendation-shield rect {
+    fill: none;
+    stroke: url(#shieldStroke);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.4s ease;
+}
+
+.saas-band.in-view .recommendation-shield path,
+.saas-band.in-view .recommendation-shield rect {
+    stroke-dashoffset: 0;
+}
+
+/* Comparison */
+.compare-wrap {
+    overflow-x: auto;
+    margin: 42px 0;
+}
+
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+    position: relative;
+    z-index: 1;
+}
+
+.compare-table th,
+.compare-table td {
+    padding: 17px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(139,92,246,0.12);
+}
+
+.compare-table th:first-child,
+.compare-table td:first-child {
+    text-align: left;
+    font-weight: 800;
+}
+
+.compare-table th {
+    background: linear-gradient(135deg, rgba(14,165,233,0.92), rgba(139,92,246,0.92));
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 1.02rem;
+}
+
+.compare-table tr:last-child td { border-bottom: none; }
+
+.dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+.dot-filled { background: linear-gradient(135deg, var(--mesh-a), var(--mesh-b)); box-shadow: 0 0 18px rgba(14,165,233,0.32); }
+.dot-hollow { border: 2px solid rgba(139,92,246,0.32); background: transparent; }
+
+.row-highlight {
+    background:
+        radial-gradient(circle at 85% 50%, rgba(16,185,129,0.12), transparent 40%),
+        linear-gradient(90deg, rgba(14,165,233,0.08), rgba(139,92,246,0.12));
+    border-left: 4px solid var(--mesh-d);
+}
+
+/* Feature rows as premium cards */
+.feature-row {
+    position: relative;
+    display: flex;
+    gap: 18px;
+    padding: 22px;
+    border: 1px solid rgba(139,92,246,0.16);
+    border-bottom: 1px solid rgba(139,92,246,0.16);
+    border-radius: 24px;
+    background: #0B1028;
+    color: rgba(240,244,255,0.88);
+    margin: 18px 0;
+    overflow: hidden;
+    box-shadow: 0 18px 54px rgba(15,23,42,0.14);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.feature-row::before {
+    content: "";
+    position: absolute;
+    inset: -40% -20% auto -20%;
+    height: 120px;
+    background: radial-gradient(circle at center, rgba(14,165,233,0.38), rgba(139,92,246,0.22), transparent 70%);
+    opacity: .72;
+    transition: transform .35s ease, opacity .35s ease, box-shadow .35s ease;
+}
+
+.feature-row:hover {
+    transform: translateY(-4px);
+    border-color: rgba(14,165,233,0.38);
+    box-shadow: 0 26px 80px rgba(15,23,42,0.22), 0 0 0 8px rgba(14,165,233,0.04), 0 0 58px rgba(139,92,246,0.20);
+}
+
+.feature-row:hover::before {
+    transform: scale(1.25) translateY(16px);
+    opacity: 1;
+    box-shadow: 0 0 60px rgba(14,165,233,0.22);
+}
+
+.feature-icon {
+    color: #7DD3FC;
+    font-size: 24px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-text { flex-grow: 1; position: relative; z-index: 1; }
+.feature-text h4 { margin-bottom: 6px; color: #fff; }
+.feature-text p { margin-bottom: 0; color: rgba(240,244,255,0.76); }
+
+/* FAQ and quiz */
+.faq-item {
+    border-bottom: 1px solid rgba(139,92,246,0.16);
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.70);
+    border-radius: 18px;
+    padding: 0 18px;
+    box-shadow: 0 10px 34px rgba(15,23,42,0.04);
+}
+
+.faq-question {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0F172A;
+    padding: 20px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: -0.02em;
+}
+
+.faq-question::after {
+    content: '+';
+    font-size: 1.5rem;
+    color: var(--color-primary-accent);
+    transition: transform 0.2s;
+}
+
+.faq-question[aria-expanded="true"]::after { transform: rotate(45deg); }
+
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.faq-answer-inner { padding-bottom: 20px; color: #334155; }
+
+.decision-tool {
+    padding: 32px;
+    margin: 44px 0;
+}
+
+.decision-tool h3 { text-align: center; margin-bottom: 22px; position: relative; z-index: 1; }
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.quiz-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.82);
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(139,92,246,0.14);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quiz-label:hover {
+    border-color: var(--color-primary-accent);
+    box-shadow: 0 14px 42px rgba(139,92,246,0.10);
+}
+
+.quiz-input { accent-color: var(--color-primary-accent); transform: scale(1.2); }
+
+#quiz-result {
+    padding: 20px;
+    background: rgba(255,255,255,0.88);
+    border-radius: 18px;
+    border-left: 4px solid var(--color-primary-accent);
+    display: none;
+    margin-top: 20px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+/* Footer */
+.site-footer {
+    position: relative;
+    background:
+        radial-gradient(circle at 20% 0%, rgba(14,165,233,0.28), transparent 34%),
+        radial-gradient(circle at 80% 20%, rgba(139,92,246,0.32), transparent 36%),
+        #05071A;
+    color: #fff;
+    padding: 68px 22px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.site-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5,7,26,0.24), rgba(5,7,26,0.86));
+}
+
+.site-footer .container { position: relative; z-index: 1; }
+
+.footer-brand {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+}
+
+.footer-brand .brand-logo { margin-right: 0; }
+
+.site-footer a { color: #93C5FD; }
+.site-footer a:hover { color: #fff; }
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.disclosure {
+    font-size: 13px;
+    color: rgba(240,244,255,0.62);
+    max-width: 680px;
+    margin: 0 auto 22px;
+}
+
+@media (max-width: 900px) {
+    .hero-float-card { opacity: 0.46; }
+    .hero-float-card.card-a { right: -18px; }
+    .hero-float-card.card-b { right: -24px; }
+    .hero-float-card.card-c { left: -24px; }
+}
+
+@media (max-width: 768px) {
+    :root { --section-padding-v: 66px; }
+
+    .site-header { padding: 12px 16px; }
+
+    .site-title { font-size: 18px; }
+    .brand-logo { height: 34px; width: 34px; }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(5,7,26,0.96);
+        padding: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 18px 46px rgba(0,0,0,0.25);
+    }
+
+    .nav-links.active { display: flex; }
+    .mobile-toggle { display: block; }
+
+    .article-hero {
+        padding: 68px 0 44px;
+        animation-duration: 40s;
+    }
+
+    .article-hero h1 { font-size: clamp(44px, 12vw, 52px); }
+
+    .hero-float-cards {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 28px 22px 0;
+    }
+
+    .hero-float-card {
+        position: static;
+        transform: none !important;
+        rotate: 0deg !important;
+        animation-duration: 8s;
+        opacity: 1;
+        text-align: center;
+    }
+
+    .aurora-divider { height: 84px; }
+    .aurora-divider svg { height: 84px; }
+    .aurora-divider path:nth-of-type(1),
+    .aurora-divider path:nth-of-type(2) { display: none; }
+
+    .saas-container { grid-template-columns: 1fr; gap: 34px; }
+    .saas-band { padding: 68px 22px; }
+
+    .saas-actions { flex-direction: column; }
+    .saas-actions .btn { width: 100%; }
+
+    .feature-row { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+    }
+    .article-hero { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<header class="site-header">
+<div class="site-title"><img alt="Security shield lock logo" class="brand-logo" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20128%20128%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22g%22%20x1%3D%2218%22%20y1%3D%2214%22%20x2%3D%22110%22%20y2%3D%22118%22%20gradientUnits%3D%22userSpaceOnUse%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230EA5E9%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.52%22%20stop-color%3D%22%238B5CF6%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23EC4899%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22glow%22%20cx%3D%2235%25%22%20cy%3D%2220%25%22%20r%3D%2275%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2310B981%22%20stop-opacity%3D%22.75%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%230EA5E9%22%20stop-opacity%3D%22.2%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2305071A%22%20stop-opacity%3D%220%22/%3E%0A%20%20%20%20%3C/radialGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3Crect%20width%3D%22128%22%20height%3D%22128%22%20rx%3D%2232%22%20fill%3D%22%2305071A%22/%3E%0A%20%20%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%22114%22%20height%3D%22114%22%20rx%3D%2228%22%20fill%3D%22url%28%23glow%29%22%20opacity%3D%22.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M64%2018%20100%2031v29c0%2026.5-15%2043.7-36%2053-21-9.3-36-26.5-36-53V31l36-13Z%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g%29%22%20stroke-width%3D%228%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Cpath%20d%3D%22M49%2060v-9c0-9.3%206-16%2015-16s15%206.7%2015%2016v9%22%20fill%3D%22none%22%20stroke%3D%22%23F0F4FF%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22/%3E%0A%20%20%3Crect%20x%3D%2243%22%20y%3D%2258%22%20width%3D%2242%22%20height%3D%2234%22%20rx%3D%229%22%20fill%3D%22url%28%23g%29%22/%3E%0A%20%20%3Ccircle%20cx%3D%2264%22%20cy%3D%2274%22%20r%3D%225%22%20fill%3D%22%23fff%22/%3E%0A%20%20%3Cpath%20d%3D%22M64%2078v8%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22/%3E%0A%3C/svg%3E"/>Text File Security Hub</div>
+<button aria-label="Toggle menu" class="mobile-toggle" id="mobile-toggle">☰</button>
+<nav class="nav-links" id="nav-links">
+<a href="#overview">Overview</a>
+<a href="#methods">Free Methods</a>
+<a href="#recommendation">Top Pick</a>
+<a href="#comparison">Comparison</a>
+<a href="#faq">FAQ</a>
+<a class="nav-cta" href="#recommendation">See Our Top Pick →</a>
+</nav>
+</header>
+<main>
+<section class="article-hero"><div aria-hidden="true" class="hero-float-cards"><div class="hero-float-card card-a">AES-256 Encryption</div><div class="hero-float-card card-b">Windows 11/10</div><div class="hero-float-card card-c">Secure Locker</div></div>
+<div class="container">
+<div class="breadcrumb">
+<a href="/">Home</a> / <a href="/windows-security/">Windows Security</a> / Guides
+                </div>
+<h1>How to <span class="gradient-text">Password Protect</span> a Notepad or Text File in Windows</h1>
+<p class="hero-intro">
+                    If you are looking for a "lock" button inside Windows Notepad, you won't find one. 
+                    However, there are several reliable ways to encrypt and password protect a <code>.txt</code> file in Windows 10 and 11, ranging from built-in OS tools to dedicated encryption software.
+                </p>
+<div class="meta-bar">
+<span>By the Editorial Team</span>
+<span>·</span>
+<span>Updated November 2023</span>
+<span>·</span>
+<span>8 min read</span>
+</div>
+<img alt="Encrypted secure notes illustration for password protecting Notepad text files in Windows" class="hero-image" decoding="async" loading="eager" src="https://i.ibb.co/LddRBVjR/Encrypted-Secure-Notes.jpg"/>
+<div class="quick-answer">
+<div class="quick-answer-title">Quick Answer</div>
+<p style="margin:0;">
+                        Windows Notepad does not have a native password protection feature. To lock a text file, you must either encrypt it using the Windows Encrypting File System (EFS), place the file inside a password-protected ZIP archive using 7-Zip, or use a dedicated file locking tool like <a href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">Folder Lock</a> for AES-256 encryption.
+                    </p>
+</div>
+</div>
+</section><div aria-hidden="true" class="aurora-divider">
+<svg preserveaspectratio="none" viewbox="0 0 1440 120">
+<defs>
+<lineargradient id="auroraWaveA" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0%" stop-color="#0EA5E9"></stop>
+<stop offset="45%" stop-color="#8B5CF6"></stop>
+<stop offset="100%" stop-color="#EC4899"></stop>
+</lineargradient>
+<lineargradient id="auroraWaveB" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0%" stop-color="#10B981"></stop>
+<stop offset="55%" stop-color="#0EA5E9"></stop>
+<stop offset="100%" stop-color="#8B5CF6"></stop>
+</lineargradient>
+</defs>
+<path d="M0,34 C170,104 354,10 557,56 C764,103 934,97 1126,45 C1252,12 1347,11 1440,35 L1440,120 L0,120 Z" fill="url(#auroraWaveA)" opacity=".92"></path>
+<path d="M0,62 C192,16 354,100 568,72 C786,43 920,2 1120,40 C1265,69 1366,84 1440,48 L1440,120 L0,120 Z" fill="url(#auroraWaveB)" opacity=".52"></path>
+<path d="M0,90 C236,50 414,94 642,78 C842,64 956,42 1145,82 C1274,108 1362,91 1440,70 L1440,120 L0,120 Z" fill="#ffffff"></path>
+</svg>
+</div>
+<section class="section bg-alt aurora-light" id="overview">
+<div class="container">
+<div class="toc-card">
+<div class="toc-title">Table of Contents</div>
+<ul class="toc-list">
+<li><a href="#requirements">What you need before starting</a></li>
+<li><a href="#methods">Method 1: The Built-in Windows EFS Method</a></li>
+<li><a href="#7zip">Method 2: Encrypt a Text File with 7-Zip</a></li>
+<li><a href="#recommendation">Our Top Pick: Using Folder Lock for .txt files</a></li>
+<li><a href="#comparison">Methods Comparison Table</a></li>
+<li><a href="#troubleshooting">Troubleshooting &amp; Recovery Notes</a></li>
+<li><a href="#faq">Frequently Asked Questions</a></li>
+</ul>
+</div>
+<h2 id="requirements">The Problem with Plain Text Files</h2>
+<p>
+                    Unlike Microsoft Word or Adobe PDF documents—which have built-in permissions and open passwords—a standard Notepad file (<code>.txt</code>) is just raw text data. It cannot natively store an encryption key or password prompt within its own format.
+                </p>
+<p>
+                    Because of this, you cannot simply "save as password-protected" directly in Notepad. Instead, you have to apply protection to the file <em>from the outside</em>. You can do this by altering the file properties, placing it in a secure container, or using a third-party application.
+                </p><figure class="content-image-wrap image-overview"><img alt="Plain virtual paper representing an unprotected Notepad text file before encryption" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/ZRsTRpZQ/sheet-of-virtual-paper.jpg"/></figure>
+</div>
+</section>
+<section class="section aurora-light" id="methods">
+<div class="container">
+<h2>Method 1: Windows Encrypting File System (EFS)</h2>
+<span class="badge">Built-in Windows Tool</span>
+<p>
+                    If you use Windows 10 or 11 Pro, Enterprise, or Education editions, you can use EFS to <a href="https://proprivacy.com/guides/encrypt-files-windows" rel="noopener noreferrer" target="_blank">encrypt a Notepad file</a>. Note: This method <strong>does not ask for a password</strong> when you open the file. Instead, it ties the encryption to your Windows user account. If someone else logs into the PC, they cannot read the file.
+                </p>
+<h3>Step-by-step:</h3>
+<ol>
+<li>Right-click the Notepad file and select <strong>Properties</strong>.</li>
+<li>In the General tab, click the <strong>Advanced</strong> button.</li>
+<li>Check the box that says <strong>Encrypt contents to secure data</strong>.</li>
+<li>Click <strong>OK</strong>, then <strong>Apply</strong>.</li>
+<li>Windows will ask if you want to encrypt just the file or the parent folder. Choose your preference and click OK.</li>
+</ol>
+<div class="pro-tip">
+<strong>Limitations:</strong> EFS is not available on Windows Home editions. Furthermore, if you email this file or put it on a USB drive, the encryption is stripped away—it only protects the file locally on your specific hard drive.
+                </div><figure class="content-image-wrap image-efs"><img alt="Windows 11 encryption options including EFS BitLocker and device encryption for local file protection" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/5x1DxZg3/windows-11-encryption-efs-bitlocker-and-device-encryption.jpg"/></figure>
+<h2 id="7zip" style="margin-top: 50px;">Method 2: Encrypt a Text File with 7-Zip</h2>
+<span class="badge">Free Open-Source Software</span>
+<p>
+                    For most Windows users wanting a literal password prompt, placing the Notepad file into a secure archive is the most common free method. 7-Zip utilizes AES-256 encryption, which is incredibly secure.
+                </p>
+<h3>How to <a href="https://kongotech.org/how-to-password-protect-a-zip-file/" rel="noopener noreferrer" target="_blank">password protect a zip file in Windows</a>:</h3>
+<ol>
+<li>Download and install <a href="https://www.7-zip.org/" rel="noopener noreferrer" target="_blank">7-Zip</a>.</li>
+<li>Right-click your Notepad text file.</li>
+<li>Select <strong>7-Zip</strong> &gt; <strong>Add to archive...</strong></li>
+<li>In the Archive settings window, look for the <strong>Encryption</strong> section on the right side.</li>
+<li>Type your desired password twice.</li>
+<li>Ensure the Encryption method is set to <strong>AES-256</strong>.</li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<p>
+                    You now have a <code>.zip</code> or <code>.7z</code> file. When you try to open the text file inside, Windows will prompt you for the password. Remember to delete the original unprotected <code>.txt</code> file!
+                </p><figure class="content-image-wrap image-zip"><img alt="Encryption explainer illustration showing how protected files are secured with a password key" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/gZ8Tcbqc/what-is-encryption-complete-explainer-for-beginners.jpg"/></figure>
+<h2 style="margin-top: 50px;">Method 3: Protect All .txt Files via Extension Masking</h2>
+<span class="badge">Third-Party Access Control</span>
+<p>
+                    What if you want people to be able to <em>read</em> your text files, but you want to absolutely prevent anyone from modifying or deleting them? Traditional encryption locks the file entirely. Instead, you can use specialized directory-level security software (like <a href="http://www.newsoftwares.net/download/folderprotect1-en/folder-protect.exe" rel="noopener noreferrer" target="_blank">Folder Protect</a>) to set up "masks." 
+                </p>
+<img alt="Folder Protect for Windows interface showing directory-level access control for text files" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/RTVcfd3m/folder-protect-for-windows.jpg"/>
+<p>
+                    By targeting the <code>*.txt</code> extension, you can create a system-wide rule that blocks the operating system from executing delete or edit commands on text files, effectively making them bulletproof against accidental tampering or unauthorized changes, without requiring a password just to view the text.
+                </p>
+</div>
+</section>
+<section class="saas-band" id="recommendation">
+<div class="saas-container">
+<div class="saas-content">
+<span class="label" style="color: #e0ecec;">The Tool We Recommend for Most Users</span>
+<h2>A Simpler Way to Password Protect Files</h2>
+<p>
+                        Of all the options we cover, zipping files every time you want to edit them is tedious, and EFS is limited to specific Windows versions. If you frequently need to lock documents from editing, restrict document access, or secure USB drives, we recommend a dedicated tool like <strong><a href="https://cloudstorageinfo.org/folder-lock-review" rel="noopener noreferrer" target="_blank">Folder Lock</a></strong>.
+                    </p>
+<div class="saas-chips">
+<span class="saas-chip">AES-256 Encryption</span>
+<span class="saas-chip">On-the-fly decryption</span>
+<span class="saas-chip">Works on Windows 11/10</span>
+<span class="saas-chip">iOS, Android &amp; Mac Support</span>
+</div>
+<div class="saas-actions">
+<a class="btn saas-btn-fill" href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">Try Folder Lock Free →</a>
+<a class="btn saas-btn-out" href="https://store.newsoftwares.net/?add=fl10" rel="noopener noreferrer" target="_blank">Get the Full Version →</a>
+</div>
+</div>
+<div class="saas-visual"><div aria-hidden="true" class="recommendation-shield">
+<svg aria-label="Animated gradient shield illustration" role="img" viewbox="0 0 180 210">
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="shieldStroke" x1="20" x2="160" y1="12" y2="198">
+<stop offset="0" stop-color="#0EA5E9"></stop>
+<stop offset=".52" stop-color="#8B5CF6"></stop>
+<stop offset="1" stop-color="#10B981"></stop>
+</lineargradient>
+</defs>
+<path d="M90 14 154 38v55c0 47-26 78-64 99-38-21-64-52-64-99V38l64-24Z" pathlength="1"></path>
+<path d="M64 94V77c0-17 10-29 26-29s26 12 26 29v17" pathlength="1"></path>
+<rect height="57" pathlength="1" rx="15" width="74" x="53" y="91"></rect>
+</svg>
+</div>
+<img alt="Folder Lock 10 promotional banner with AES 256-bit encryption and secure file locker features" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/C3dwdr7Z/folder-lock-10-promotional-poster-newsoftwares.jpg"/>
+<figure class="content-image-wrap image-boxshot"><img alt="Folder Lock 10 software boxshot for Windows file encryption and password protection" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/V0Sw4tk7/folder-lock-10-boxshot.png"/></figure></div>
+</div>
+</section>
+<section class="section aurora-light">
+<div class="container">
+<h2>How to Lock a .txt File Using Folder Lock</h2>
+<p>
+                    If you opt for Folder Lock, you don't need to zip and unzip your text file just to read or edit it. The software uses on-the-fly encryption, meaning the file unlocks in memory when you enter your master password, and re-locks instantly when closed.
+                </p>
+<ol>
+<li>Open <strong>Folder Lock</strong> and enter your Master Password.</li>
+<li>Click on <strong>Lock Files</strong> in the left sidebar.</li>
+<li>Drag and drop your Notepad file directly into the application window.</li>
+<li>The file will immediately disappear from its original location and move to your secure locker.</li>
+</ol><figure class="content-image-wrap image-main-screen"><img alt="Folder Lock 10 main screen showing secure lockers and file protection controls" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/ynCZTHt1/folder-lock-10-main-screen.png"/></figure>
+<img alt="Folder Lock secure locker screen for storing protected Notepad text files" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/Q713yG79/Folder-Lock-locker.jpg"/>
+<p>
+                    To edit it, simply open Folder Lock, double-click the file, make your changes in Notepad, and save. It remains fully encrypted.
+                </p>
+<div class="pro-tip" style="margin-top: 40px; overflow: hidden;">
+<strong>Cross-Platform Access &amp; A Warning on "Lite" Versions:</strong>
+<img alt="Cross-platform synchronization illustration for accessing encrypted lockers on desktop mobile and cloud" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/jZfz7Hzz/Cross-Platform-Synchronization.jpg"/>
+<br/>
+                    A major benefit of using the <a href="https://aijourn.com/newsoftwares-llc-releases-folder-lock-10-1-13-for-windows-and-launches-first-macos-edition/" rel="noopener noreferrer" target="_blank">full Folder Lock suite</a> is mobility. You can push your secure lockers to Google Drive or Dropbox and access your private text notes on the go using their companion apps for iPhone, iPad, Android, or Mac. 
+                    <br/><br/>
+<em>Crucial note:</em> Make sure you are using the primary Folder Lock software if you want true AES-256 scrambling. Trimmed-down variants, such as "Folder Lock Lite," are designed strictly for quickly hiding directories from view and do not apply cryptographic encryption to your raw text files.
+                </div>
+</div>
+</section>
+<section class="section bg-alt aurora-light" id="interactive-tool">
+<div class="container">
+<div class="decision-tool">
+<h3>Interactive Guide: Choose the Right Protection Level</h3>
+<p style="text-align:center;">Not sure which method fits your workflow? Tell us your main goal:</p>
+<div class="quiz-options">
+<label class="quiz-label">
+<input class="quiz-input" name="goal" type="radio" value="efs"/>
+                            I just want to keep local users on my PC out (Windows Pro).
+                        </label>
+<label class="quiz-label">
+<input class="quiz-input" name="goal" type="radio" value="7zip"/>
+                            I want to email a text file securely for free.
+                        </label>
+<label class="quiz-label">
+<input class="quiz-input" name="goal" type="radio" value="folderlock"/>
+                            I have many text files and edit them daily. I need speed and security.
+                        </label>
+</div>
+<div id="quiz-result">
+<!-- Populated by JS -->
+</div>
+</div>
+</div>
+</section>
+<section class="section aurora-light" id="comparison">
+<div class="container-wide">
+<span class="label">At a Glance</span>
+<h2>Methods Comparison Table</h2>
+<p>A quick overview of how the different approaches to <a href="https://www.cloudwards.net/best-encryption-software/" rel="noopener noreferrer" target="_blank">document security software</a> stack up.</p>
+<div class="compare-wrap">
+<table class="compare-table">
+<thead>
+<tr>
+<th>Method</th>
+<th>Password Prompt?</th>
+<th>Email/Shareable?</th>
+<th>Setup Difficulty</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows EFS</td>
+<td><span aria-label="No" class="dot dot-hollow"></span></td>
+<td><span aria-label="No" class="dot dot-hollow"></span></td>
+<td>Easy</td>
+<td>Free (Win Pro)</td>
+</tr>
+<tr>
+<td>Notepad++ Plugin</td>
+<td><span aria-label="Yes" class="dot dot-filled"></span></td>
+<td><span aria-label="Yes" class="dot dot-filled"></span></td>
+<td>Moderate</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>7-Zip Archive</td>
+<td><span aria-label="Yes" class="dot dot-filled"></span></td>
+<td><span aria-label="Yes" class="dot dot-filled"></span></td>
+<td>Moderate</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Extension Masking (e.g., Folder Protect)</td>
+<td><span aria-label="No" class="dot dot-hollow"></span> (Read-only)</td>
+<td><span aria-label="No" class="dot dot-hollow"></span></td>
+<td>Moderate</td>
+<td>Paid</td>
+</tr>
+<tr class="row-highlight">
+<td>Folder Lock</td>
+<td><span aria-label="Yes" class="dot dot-filled"></span></td>
+<td><span aria-label="Yes" class="dot dot-filled"></span></td>
+<td>Very Easy</td>
+<td>Paid</td>
+</tr>
+</tbody>
+</table>
+</div><figure class="content-image-wrap image-comparison"><img alt="Windows encryption software comparison visual for choosing a text file protection method" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/K149f6r/best-windows-encryption-software.jpg"/></figure>
+</div>
+</section>
+<section class="section bg-alt aurora-light" id="troubleshooting">
+<div class="container">
+<h2>Troubleshooting &amp; Owner Recovery Notes</h2>
+<p>Losing access to a secure document is stressful. Here is how to handle common issues.</p><figure class="content-image-wrap image-troubleshooting"><img alt="Unlocking protected data illustration for password recovery and encrypted text file access issues" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/gLVNxgq4/Accessing-Data-Unlocking.jpg"/></figure>
+<div class="feature-row">
+<div class="feature-icon">⚠️</div>
+<div class="feature-text">
+<h4>How to open folder lock if password forgotten?</h4>
+<p>If you used a commercial tool like Folder Lock, look for the master key or license serial number sent to your email upon purchase. The software allows you to recover your account using the original registration credentials. <em>Note: If you lose both your password and serial key, the AES-256 encryption cannot be bypassed.</em></p>
+</div>
+</div>
+<div class="feature-row">
+<div class="feature-icon">🔒</div>
+<div class="feature-text">
+<h4>7-zip not password protecting or cannot extract?</h4>
+<p>If 7-Zip opens but fails to extract, ensure you typed the password correctly (passwords are case-sensitive). If 7-Zip never asked for a password during creation, you likely left the encryption fields blank. Re-archive the file and verify the AES-256 method is selected.</p>
+</div>
+</div>
+<div class="feature-row">
+<div class="feature-icon">❌</div>
+<div class="feature-text">
+<h4>Cannot open an EFS file on a new computer?</h4>
+<p>If you moved an EFS-encrypted Notepad file to a new PC via USB, it will be unreadable unless you exported your EFS certificate from the old PC. You must go back to the original PC, remove the encryption, and then transfer the file.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="section aurora-light" id="faq">
+<div class="container">
+<span class="label">Common Questions</span>
+<h2>Frequently Asked Questions</h2><figure class="content-image-wrap image-faq"><img alt="Encryption software workflow illustration showing how password protected files are locked and unlocked" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/hJngV20r/what-is-encryption-software-and-how-does-it-work.jpg"/></figure>
+<div class="faq-accordion">
+<div class="faq-item">
+<button aria-expanded="false" class="faq-question">How to password protect a Notepad file in Windows?</button>
+<div class="faq-answer">
+<div class="faq-answer-inner">
+                                Because Notepad doesn't have a built-in password feature, the <a href="https://www.avast.com/c-password-protect-file-folder-windows" rel="noopener noreferrer" target="_blank">best free way</a> is to use a utility like 7-Zip to place the text file inside an encrypted archive. Alternatively, you can use dedicated security software like Folder Lock.
+                            </div>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-question">What is the difference between an open password and a permissions password?</button>
+<div class="faq-answer">
+<div class="faq-answer-inner">
+                                An <strong>open password</strong> prevents someone from viewing the file at all without the key. A <strong>permissions password</strong> (common in Word and PDF files) allows someone to read the document, but requires a password to edit, copy, or print it. Plain text files only support open passwords via encryption.
+                            </div>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-question">Can Notepad++ encrypt a file?</button>
+<div class="faq-answer">
+<div class="faq-answer-inner">
+                                Yes. While the default Windows Notepad cannot, the popular free code editor Notepad++ has a plugin manager where you can install the "NppCrypt" plugin. This allows you to encrypt the text inside the editor using various algorithms before saving.
+                            </div>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-question">Can I batch password protect multiple documents?</button>
+<div class="faq-answer">
+<div class="faq-answer-inner">
+                                Yes. Using 7-Zip, you can highlight dozens of text files, right-click, and add them to a single encrypted archive. If using Folder Lock, you can drag multiple files into your locker simultaneously.
+                            </div>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-question">Is there a way to password protect shared files in Google Drive?</button>
+<div class="faq-answer">
+<div class="faq-answer-inner">
+                                Google Drive relies on account-level sharing permissions rather than traditional file passwords. If you want a literal password on a file stored in Drive, you must encrypt the text file locally (e.g., via 7-Zip) <em>before</em> uploading it to the cloud.
+                            </div>
+</div>
+</div>
+<div class="faq-item">
+<button aria-expanded="false" class="faq-question">Can I stop a text file from being edited without encrypting it?</button>
+<div class="faq-answer">
+<div class="faq-answer-inner">
+                                Yes, but not with Notepad alone. You would need to use access-control software that allows you to set permissions on the <code>.txt</code> file extension. This blocks the operating system from saving changes or deleting the file, while still allowing anyone to open and read it normally.
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="section bg-alt aurora-light">
+<div class="container" style="text-align: center;">
+<span class="label">Our Verdict</span>
+<h2>The Bottom Line on Text File Security</h2>
+<p style="max-width: 600px; margin: 0 auto 30px;">
+                    Securing plain text data requires third-party help. If you only need to send one file securely, <strong>7-Zip</strong> is a fantastic, free solution. However, if you manage sensitive passwords, journal entries, or coding notes daily, the constant zipping/unzipping becomes a chore. For regular users, we recommend <strong>Folder Lock</strong> for its seamless on-the-fly <a href="https://psbios.com/file-encryption-explained/" rel="noopener noreferrer" target="_blank">AES-256 encryption</a>.
+                </p><figure class="content-image-wrap image-verdict"><img alt="Security shield protecting sensitive plain text files with encryption" class="content-image" decoding="async" loading="lazy" src="https://i.ibb.co/bjywWFhL/security-shield-protecting.jpg"/></figure>
+<div style="display: flex; gap: 15px; justify-content: center;">
+<a class="btn btn-outline" href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">Try Folder Lock free →</a>
+<a class="btn btn-outline" href="https://store.newsoftwares.net/?add=fl10" rel="noopener noreferrer" target="_blank">Get the full version →</a>
+</div>
+</div>
+</section>
+</main>
+<footer class="site-footer">
+<div class="container">
+<h3 class="footer-brand"><img alt="Security shield lock logo" class="brand-logo" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20128%20128%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22g%22%20x1%3D%2218%22%20y1%3D%2214%22%20x2%3D%22110%22%20y2%3D%22118%22%20gradientUnits%3D%22userSpaceOnUse%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230EA5E9%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.52%22%20stop-color%3D%22%238B5CF6%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23EC4899%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%20%20%3CradialGradient%20id%3D%22glow%22%20cx%3D%2235%25%22%20cy%3D%2220%25%22%20r%3D%2275%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2310B981%22%20stop-opacity%3D%22.75%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%230EA5E9%22%20stop-opacity%3D%22.2%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2305071A%22%20stop-opacity%3D%220%22/%3E%0A%20%20%20%20%3C/radialGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3Crect%20width%3D%22128%22%20height%3D%22128%22%20rx%3D%2232%22%20fill%3D%22%2305071A%22/%3E%0A%20%20%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%22114%22%20height%3D%22114%22%20rx%3D%2228%22%20fill%3D%22url%28%23glow%29%22%20opacity%3D%22.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M64%2018%20100%2031v29c0%2026.5-15%2043.7-36%2053-21-9.3-36-26.5-36-53V31l36-13Z%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g%29%22%20stroke-width%3D%228%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Cpath%20d%3D%22M49%2060v-9c0-9.3%206-16%2015-16s15%206.7%2015%2016v9%22%20fill%3D%22none%22%20stroke%3D%22%23F0F4FF%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22/%3E%0A%20%20%3Crect%20x%3D%2243%22%20y%3D%2258%22%20width%3D%2242%22%20height%3D%2234%22%20rx%3D%229%22%20fill%3D%22url%28%23g%29%22/%3E%0A%20%20%3Ccircle%20cx%3D%2264%22%20cy%3D%2274%22%20r%3D%225%22%20fill%3D%22%23fff%22/%3E%0A%20%20%3Cpath%20d%3D%22M64%2078v8%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22/%3E%0A%3C/svg%3E"/>Text File Security Hub</h3>
+<p class="disclosure">
+                This site operates as an independent editorial resource. Some links may earn a referral commission at no cost to you. Product recommendations reflect editorial judgment and independent assessment.
+            </p>
+<div class="footer-links">
+<a href="#">Privacy Policy</a>
+<a href="#">Terms of Use</a>
+<a href="#">Disclaimer</a>
+<a href="#">Editorial Policy</a>
+</div>
+<p style="font-size: 13px; color: #8a9e9e;">
+                Folder Lock is developed by <a href="https://www.newsoftwares.net" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a>. <br/>
+                © 2026 Text File Security Hub
+            </p>
+</div>
+</footer>
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "Text File Security Hub",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://example.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Article",
+          "headline": "How to Password Protect a Notepad or Text File in Windows",
+          "author": { "@type": "Person", "name": "Editorial Team" },
+          "publisher": {
+            "@type": "Organization",
+            "name": "NewSoftwares.net"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How to password protect a Notepad file in Windows?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Because Notepad doesn't have a built-in password feature, use a utility like 7-Zip to place the text file inside an encrypted archive, or use dedicated security software like Folder Lock."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can Notepad++ encrypt a file?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. While the default Windows Notepad cannot, Notepad++ has a plugin manager where you can install the NppCrypt plugin to encrypt the text inside the editor."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to password protect a zip file in Windows using 7-Zip",
+          "step": [
+            { "@type": "HowToStep", "text": "Download and install 7-Zip." },
+            { "@type": "HowToStep", "text": "Right-click your Notepad text file." },
+            { "@type": "HowToStep", "text": "Select 7-Zip > Add to archive..." },
+            { "@type": "HowToStep", "text": "In the Archive settings window, look for the Encryption section." },
+            { "@type": "HowToStep", "text": "Type your desired password twice and set method to AES-256." }
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home" },
+            { "@type": "ListItem", "position": 2, "name": "Windows Security" },
+            { "@type": "ListItem", "position": 3, "name": "How to Password Protect a Notepad File" }
+          ]
+        }
+      ]
+    }
+    </script>
+<script defer="">
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('mobile-toggle');
+            const nav = document.getElementById('nav-links');
+            if(toggle && nav) {
+                toggle.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                });
+            }
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#' || !targetId.startsWith('#')) return;
+                    
+                    const targetEl = document.querySelector(targetId);
+                    if (targetEl) {
+                        e.preventDefault();
+                        if(nav.classList.contains('active')) nav.classList.remove('active');
+                        targetEl.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            const progressBar = document.getElementById('progress-bar');
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                progressBar.style.width = scrolled + "%";
+            });
+
+            const faqs = document.querySelectorAll('.faq-question');
+            faqs.forEach(faq => {
+                faq.addEventListener('click', () => {
+                    const isExpanded = faq.getAttribute('aria-expanded') === 'true';
+                    
+                    faqs.forEach(f => {
+                        f.setAttribute('aria-expanded', 'false');
+                        f.nextElementSibling.style.maxHeight = null;
+                    });
+
+                    if (!isExpanded) {
+                        faq.setAttribute('aria-expanded', 'true');
+                        const answer = faq.nextElementSibling;
+                        answer.style.maxHeight = answer.scrollHeight + "px";
+                    }
+                });
+            });
+
+            const quizInputs = document.querySelectorAll('.quiz-input');
+            const quizResult = document.getElementById('quiz-result');
+            
+            const results = {
+                'efs': "<strong>Recommendation: Windows EFS.</strong> It is free and built into your OS. Perfect for keeping local accounts out without needing to remember a new password.",
+                '7zip': "<strong>Recommendation: 7-Zip.</strong> It provides AES-256 encryption and wraps your text file in a password-protected container that you can safely email to anyone.",
+                'folderlock': "<strong>Recommendation: Folder Lock.</strong> Because you edit files frequently, Folder Lock's on-the-fly memory decryption will save you from constantly unzipping and rezipping your files."
+            };
+
+            quizInputs.forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    quizResult.style.display = 'block';
+                    quizResult.innerHTML = results[val];
+                });
+            });
+            const revealTargets = document.querySelectorAll('.section, .saas-band');
+            if ('IntersectionObserver' in window) {
+                const auroraObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('in-view');
+                        }
+                    });
+                }, { threshold: 0.18 });
+                revealTargets.forEach(target => auroraObserver.observe(target));
+            } else {
+                revealTargets.forEach(target => target.classList.add('in-view'));
+            }
+
+        });
+    </script>
+</body>
+</html>
